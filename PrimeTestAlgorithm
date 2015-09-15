@@ -1,0 +1,73 @@
+// Jacob A. Smith
+// ECE 3020B - Spring 2015
+// Homework #7 - Prime-testing algorithm
+
+package org.homework7; // Package I was working from, comment out if needed
+
+import java.math.BigInteger;
+import java.util.Random;
+
+
+public class ECE3020_Homework7 {
+	
+	// Method to generate a random Big Integer
+	// Takes a seed (num) and generates a BigInteger of the same bit size
+	public static BigInteger randomBigIntGenerator(BigInteger num){
+		BigInteger BigInt;
+		// try block to wait a few milliseconds so that duplicate numbers are generated consecutively
+		try {
+			Thread.sleep(111);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		Random rand = new Random(System.currentTimeMillis()); // uses the current time as a seed
+		do{
+			BigInt = new BigInteger(num.bitLength(), rand);
+		}while(BigInt.compareTo(num) >= 0); // ensures that the number generated is less than the seed (num)
+		return BigInt;
+	}// end method
+
+	public static void main(String[] args) {
+		// welcome message
+		System.out.println("Welcome to BigInteger Prime-Testing Algorithm\n");
+		System.out.println("Author: Jacob A. Smith\nClass: ECE 3020\nProject: Homework 7\n");
+		
+		boolean prime = false; //variable to brake out of the while loop
+		BigInteger p, k, a, pMinus1; // algorithm variables
+		BigInteger seed = new BigInteger("999999999999999999999");
+		BigInteger BigIntOne = new BigInteger("1");
+		int z = 0; // variables z and res are used to check k values
+		int res;
+		
+		// This while loop generates a new random BigInteger each iteration.
+		// It saves the BigIteger to p, then saves p-1 to pMinus1
+		while(prime == false){
+			
+			z = 0;
+			p = randomBigIntGenerator(seed); // generates prime-tested number
+			pMinus1 = p.subtract(BigIntOne); // prime-tested number minus 1
+		
+			// This for loop generates a new k value in between 1 and p-1.
+			// It then uses a modular exponentiation function to test if it is prime.
+			// If the remainder is one, we increment z. If z reaches 10, then all of the 
+			// k values succeeded and can be almost certain p is prime.
+			for(int i = 0; i < 10; i++){
+				k = randomBigIntGenerator(pMinus1); // random k values. 10 will be generated
+				a = k.modPow(pMinus1, p); // Calculates modulus of a^(p-1)/p
+				res = a.compareTo(BigIntOne); // res = 0 if modulus of above == 1
+				// each time res == 0, we increment z. 
+				if(res == 0){
+					z++;
+				}
+			}
+			// if z reaches 10 in the for loop, then we know that all 10 k tests passed.
+			// so we break out of the while loop (prime goes from false -> true).
+			// In this case we are almost certain p is prime so we output the p value, 
+			// and the program terminates.
+			if(z == 10){
+				prime = true;
+				System.out.println("Generated this Prime Number: " + p);
+			}
+		}// end while loop
+	}// end main method
+}// end class
